@@ -22,7 +22,7 @@ def validate_input(df, user_input: str, column:str):
 
     try:
         if len(user_input) == 0:
-            return None
+            return None, None, None
 
         temp_splits = user_input.split(",")
         name = temp_splits[0]
@@ -33,9 +33,9 @@ def validate_input(df, user_input: str, column:str):
         avg = float(avg)
 
         if len(name) < 2:
-            return None
+            return None, None, None
         if len(name) > 20:
-            return None
+            return None, None, None
 
         duplicate_check = df[df[column] == name]
 
@@ -45,11 +45,12 @@ def validate_input(df, user_input: str, column:str):
             avg = duplicate_check["avg"][0]
 
         else:
-            save_new_entry(df, column, name, mono, avg)
+            df = save_new_entry(df, column, name, mono, avg)
 
 
 
-        return name, mono, avg
+
+        return mono, avg, df
 
 
     except BaseException as ex:
@@ -59,9 +60,12 @@ def validate_input(df, user_input: str, column:str):
 def save_new_entry(df, column: str, name: str, mono: float, avg: float):
     df = df.append({f"{column}": name, "mono": mono, "avg": avg}, ignore_index=True)
     df.to_csv(os.path.join("data", f"{column}.csv"), index=True)
+    return df
 
 def get_ms(df, user_input: str, column: str):
-    predefined_ms = df[df[column] == user_input]
-    return predefined_ms
+    predefined_ms = df[df[column] == user_input].reset_index()
+    mono_ms = predefined_ms["mono"][0]
+    avg_ms = predefined_ms["avg"][0]
+    return mono_ms, avg_ms
 
 
