@@ -1,8 +1,6 @@
 ,n-option,mono,avg
-0,amino,7.0,7.0
-1,fmoc,2.0,2.0
-2,other,,
-3,amine,4.22,2.44
-4,example,1.0,2.0
-5,test,1.0,2.0
-6,ntest,1.0,2.0
+0,choose N-terminus,,
+1,other,,
+2,amine,1.0078,1.0079
+3,fmoc,223.0759,223.2473
+

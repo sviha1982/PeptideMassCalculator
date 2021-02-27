@@ -1,6 +1,6 @@
 ,c-option,mono,avg
-0,acid,17.0027,17.0074
+0,choose C-terminus,,
 1,other,,
-2,thioester,167.0167,167.2051
-3,test,1.0,2.0
-4,ctest,1.0,2.0
+2,acid,17.0027,17.0074
+3,hydrazide,31.0296,31.0372
+4,thioester,167.0167,167.2051
