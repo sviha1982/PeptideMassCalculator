@@ -6,24 +6,31 @@ def calculate_ms(ms, sequence) -> (float, float):
     sum_mono: float = 0
     sum_avg: float = 0
 
-    delimiter_list = [s.start() for s in re.finditer('$', sequence)]
-    for delimiter in range(0,len(delimiter_list),2):
-        start = delimiter
-        end = delimiter +1
-        sub_sequence = sequence[start:end]
-        unusual_ms = ms[ms["character"] == sub_sequence].reset_index()
+    delimiter_count = sequence.count("(")
+    delimiter_count += sequence.count(")")
 
-        if unusual_ms.empty:
-            continue
+    st.write(delimiter_count)
+    if delimiter_count < 2:
+        return calculate_sequence_ms(ms, sequence)
 
-        sum_mono += unusual_ms["mono"][0]
-        sum_avg += unusual_ms["avg"][0]
+    else:
 
-    for delimiter in range(0,len(delimiter_list),2):
-        start = delimiter
-        end = delimiter +1
-        if len(sequence) >= end:
-            sequence = sequence[0: start:] + sequence[end + 1::]
+        unusual_list, sequence = extract_unusual_aa(sequence, delimiter_count)
+
+
+        sum_mono, sum_avg = calculate_sequence_ms(ms, sequence)
+
+        for unusual_aa in unusual_list:
+            unusual_ms = ms[ms["character"] == unusual_aa].reset_index()
+            sum_mono += unusual_ms["mono"][0]
+            sum_avg += unusual_ms["avg"][0]
+
+        return sum_mono, sum_avg
+
+
+def calculate_sequence_ms(ms, sequence)-> (float, float):
+    sum_mono: float = 0
+    sum_avg: float = 0
 
     for char in sequence.upper():
         temp_ms_df = ms[ms["character"] == char].reset_index()
@@ -34,3 +41,13 @@ def calculate_ms(ms, sequence) -> (float, float):
 
 def calculate_total_ms(sum_ms: float, c_ms: float, n_ms: float) -> float:
         return sum_ms + c_ms + n_ms
+
+def extract_unusual_aa (sequence, delimiter_count):
+    unusual_list = []
+
+    for delimiter in range(0, delimiter_count, 2):
+        start = sequence.find("(")
+        end = sequence.find(")")
+        unusual_list.append(sequence[start + 1:end])
+        sequence = sequence[0:start] + sequence[end+1:]
+    return unusual_list, sequence
