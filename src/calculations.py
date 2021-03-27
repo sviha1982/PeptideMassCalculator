@@ -2,33 +2,38 @@ import pandas as pd
 import streamlit as st
 import re
 
+
 def calculate_ms(ms, sequence) -> (float, float):
-    sum_mono: float = 0
-    sum_avg: float = 0
+    try:
 
-    delimiter_count = sequence.count("(")
-    delimiter_count += sequence.count(")")
+        delimiter_count = sequence.count("(")
+        delimiter_count += sequence.count(")")
 
-    st.write(delimiter_count)
-    if delimiter_count < 2:
-        return calculate_sequence_ms(ms, sequence)
+        if delimiter_count < 2:
+            return calculate_sequence_ms(ms, sequence)
 
-    else:
+        else:
 
-        unusual_list, sequence = extract_unusual_aa(sequence, delimiter_count)
+            unusual_list, sequence = extract_unusual_aa(sequence, delimiter_count)
+
+            sum_mono, sum_avg = calculate_sequence_ms(ms, sequence)
+
+            for unusual_aa in unusual_list:
+                unusual_ms = ms[ms["character"] == unusual_aa].reset_index()
+                if unusual_ms.empty:
+                    raise ValueError(f"Error: Could not find {unusual_aa} in the list."
+                                     f"Please add {unusual_aa} to the list or choose an existing unusual amino acid.")
+                else:
+                    sum_mono += unusual_ms["mono"][0]
+                    sum_avg += unusual_ms["avg"][0]
+
+            return sum_mono, sum_avg
+
+    except ValueError as ex:
+        raise
 
 
-        sum_mono, sum_avg = calculate_sequence_ms(ms, sequence)
-
-        for unusual_aa in unusual_list:
-            unusual_ms = ms[ms["character"] == unusual_aa].reset_index()
-            sum_mono += unusual_ms["mono"][0]
-            sum_avg += unusual_ms["avg"][0]
-
-        return sum_mono, sum_avg
-
-
-def calculate_sequence_ms(ms, sequence)-> (float, float):
+def calculate_sequence_ms(ms, sequence) -> (float, float):
     sum_mono: float = 0
     sum_avg: float = 0
 
@@ -39,15 +44,17 @@ def calculate_sequence_ms(ms, sequence)-> (float, float):
 
     return sum_mono, sum_avg
 
-def calculate_total_ms(sum_ms: float, c_ms: float, n_ms: float) -> float:
-        return sum_ms + c_ms + n_ms
 
-def extract_unusual_aa (sequence, delimiter_count):
+def calculate_total_ms(sum_ms: float, c_ms: float, n_ms: float) -> float:
+    return sum_ms + c_ms + n_ms
+
+
+def extract_unusual_aa(sequence, delimiter_count):
     unusual_list = []
 
     for delimiter in range(0, delimiter_count, 2):
         start = sequence.find("(")
         end = sequence.find(")")
         unusual_list.append(sequence[start + 1:end])
-        sequence = sequence[0:start] + sequence[end+1:]
+        sequence = sequence[0:start] + sequence[end + 1:]
     return unusual_list, sequence

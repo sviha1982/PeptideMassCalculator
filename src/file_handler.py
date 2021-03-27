@@ -3,6 +3,7 @@ import streamlit as st
 import os
 from pathlib import Path
 
+
 @st.cache
 def load_cache_df(file_name: str):
     return pd.read_csv(os.path.join("data", file_name), index_col=0)
@@ -18,8 +19,8 @@ def create_data(df):
     avg_ms_df = df[["character", "avg"]]
     return mono_ms_df, avg_ms_df
 
-def validate_input(df, user_input: str, column:str):
 
+def validate_input(df, user_input: str, column: str):
     try:
         if len(user_input) == 0:
             return None, None, None
@@ -47,9 +48,6 @@ def validate_input(df, user_input: str, column:str):
         else:
             df = save_new_entry(df, column, name, mono, avg)
 
-
-
-
         return mono, avg, df
 
 
@@ -62,10 +60,9 @@ def save_new_entry(df, column: str, name: str, mono: float, avg: float):
     df.to_csv(os.path.join("data", f"{column}.csv"), index=True)
     return df
 
+
 def get_ms(df, user_input: str, column: str):
     predefined_ms = df[df[column] == user_input].reset_index()
     mono_ms = predefined_ms["mono"][0]
     avg_ms = predefined_ms["avg"][0]
     return mono_ms, avg_ms
-
-

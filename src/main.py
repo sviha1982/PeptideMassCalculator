@@ -5,6 +5,7 @@ from file_handler import load_df, create_data, validate_input, load_cache_df, ge
 from calculations import calculate_ms, calculate_total_ms
 import os
 import math
+
 st.header("Peptide Mass Calculator")
 aa_mass_df = load_df("character.csv")
 n_option_df = load_df("n-option.csv")
@@ -18,7 +19,7 @@ if sequence == "":
 u_mono = None
 U_avg = None
 if st.checkbox("show unnatural amino acids"):
-    st.write(aa_mass_df[20:len(aa_mass_df)+1])
+    st.write(aa_mass_df[20:len(aa_mass_df) + 1])
     unnatural = st.text_input("Add unnatural amino acid to list", "")
     if unnatural is not None:
         u_mono, u_avg, aa_mass_df = validate_input(aa_mass_df, unnatural, "character")
@@ -50,16 +51,20 @@ if c_option == "other":
 else:
     c_mono, c_avg = get_ms(c_option_df, c_option, "c-option")
 
-#TODO: Fix that when other is chosen n_ and c_mono er None --> does not work with math
+# TODO: Fix that when other is chosen n_ and c_mono er None --> does not work with math
 if math.isnan(n_mono) or math.isnan(c_mono) or sequence == "":
-   st.write("Please select terminal groups above")
+    st.write("Please select terminal groups above")
 
 else:
-    calculate_ms(aa_mass_df, sequence)
-    mono_ms_df, avg_ms_df = create_data(aa_mass_df)
-    sum_mono, sum_avg = calculate_ms(aa_mass_df, sequence)
 
+    try:
+        calculate_ms(aa_mass_df, sequence)
+        mono_ms_df, avg_ms_df = create_data(aa_mass_df)
+        sum_mono, sum_avg = calculate_ms(aa_mass_df, sequence)
 
-    #TODO: Find and fix reason why the first two sequence characters are left out in calculations
-    st.write("monoisotopic mass:", "{:12.4f}".format(calculate_total_ms(sum_mono, n_mono, c_mono)))
-    st.write("average mass:", "{:12.4f}".format(calculate_total_ms(sum_avg, n_avg, c_avg)))
+        # TODO: Find and fix reason why the first two sequence characters are left out in calculations
+        st.write("monoisotopic mass:", "{:12.4f}".format(calculate_total_ms(sum_mono, n_mono, c_mono)))
+        st.write("average mass:", "{:12.4f}".format(calculate_total_ms(sum_avg, n_avg, c_avg)))
+
+    except ValueError as ex:
+        st.error(ex)
