@@ -23,7 +23,7 @@ def create_data(df):
 def validate_input(df, user_input: str, column: str):
     try:
         if len(user_input) == 0:
-            return None, None, None
+            raise ValueError("Error: User input should not be empty.")
 
         temp_splits = user_input.split(",")
         name = temp_splits[0]
@@ -34,9 +34,9 @@ def validate_input(df, user_input: str, column: str):
         avg = float(avg)
 
         if len(name) < 2:
-            return None, None, None
+            raise ValueError("Error: User input too short. Please enter at least 2 characters.")
         if len(name) > 20:
-            return None, None, None
+            raise ValueError("Error: User input too long. Please enter no more than 20 characters.")
 
         duplicate_check = df[df[column] == name]
 
@@ -51,8 +51,8 @@ def validate_input(df, user_input: str, column: str):
         return mono, avg, df
 
 
-    except BaseException as ex:
-        return ex
+    except ValueError as ex:
+        raise
 
 
 def save_new_entry(df, column: str, name: str, mono: float, avg: float):
