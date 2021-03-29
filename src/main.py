@@ -18,13 +18,14 @@ if sequence == "":
 
 u_mono = None
 U_avg = None
+#TODO: wenn checkbox is ticked type error occurs. Traceback and fix.
 if st.checkbox("show unnatural amino acids"):
     st.write(aa_mass_df[20:len(aa_mass_df) + 1])
     unnatural = st.text_input("Add unnatural amino acid to list", "")
-    if unnatural is not None:
+    if unnatural != "":
         u_mono, u_avg, aa_mass_df = validate_input(aa_mass_df, unnatural, "character")
     else:
-        st.write("Type name, monoisotopic and average mass (e.g. Any, 101.0603, 101.1250")
+        st.write("Type name, monoisotopic and average mass (e.g. Any, 101.0603, 101.1250)")
 
 col_n, col_c = st.beta_columns(2)
 n_mono = None
@@ -62,7 +63,6 @@ else:
         mono_ms_df, avg_ms_df = create_data(aa_mass_df)
         sum_mono, sum_avg = calculate_ms(aa_mass_df, sequence)
 
-        # TODO: Find and fix reason why the first two sequence characters are left out in calculations
         st.write("monoisotopic mass:", "{:12.4f}".format(calculate_total_ms(sum_mono, n_mono, c_mono)))
         st.write("average mass:", "{:12.4f}".format(calculate_total_ms(sum_avg, n_avg, c_avg)))
 

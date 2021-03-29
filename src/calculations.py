@@ -39,8 +39,11 @@ def calculate_sequence_ms(ms, sequence) -> (float, float):
 
     for char in sequence.upper():
         temp_ms_df = ms[ms["character"] == char].reset_index()
-        sum_mono = sum_mono + temp_ms_df["mono"][0]
-        sum_avg = sum_avg + temp_ms_df["avg"][0]
+        if temp_ms_df.empty:
+            raise ValueError(f"Error: {char} is not a valid natural amino acid")
+        else:
+            sum_mono = sum_mono + temp_ms_df["mono"][0]
+            sum_avg = sum_avg + temp_ms_df["avg"][0]
 
     return sum_mono, sum_avg
 
