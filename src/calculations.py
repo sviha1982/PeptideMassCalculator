@@ -52,7 +52,7 @@ def calculate_total_ms(sum_ms: float, c_ms: float, n_ms: float) -> float:
     return sum_ms + c_ms + n_ms
 
 
-def extract_unusual_aa(sequence, delimiter_count):
+def extract_unusual_aa(sequence: str, delimiter_count: int):
     unusual_list = []
 
     for delimiter in range(0, delimiter_count, 2):
@@ -61,3 +61,10 @@ def extract_unusual_aa(sequence, delimiter_count):
         unusual_list.append(sequence[start + 1:end])
         sequence = sequence[0:start] + sequence[end + 1:]
     return unusual_list, sequence
+
+
+def calc_fragmentation(ms_type: float):
+    frag_ms_df = pd.DataFrame(columns=["charge", "m/z"])
+    for charge in range(1, 11, 1):
+        frag_ms_df = frag_ms_df.append({"charge": f"+{charge}", "m/z": (ms_type + charge) // charge}, ignore_index=True)
+    return frag_ms_df

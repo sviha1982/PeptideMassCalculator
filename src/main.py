@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from file_handler import load_df, create_data, validate_input, load_cache_df, get_ms
-from calculations import calculate_ms, calculate_total_ms
+from calculations import calculate_ms, calculate_total_ms, calc_fragmentation
 import os
 import math
 
@@ -18,6 +18,10 @@ if sequence == "":
 
 u_mono = None
 U_avg = None
+
+total_mono_ms = None
+total_avg_ms = None
+
 try:
     if st.checkbox("show unnatural amino acids"):
         st.write(aa_mass_df[20:len(aa_mass_df) + 1])
@@ -62,8 +66,19 @@ try:
         mono_ms_df, avg_ms_df = create_data(aa_mass_df)
         sum_mono, sum_avg = calculate_ms(aa_mass_df, sequence)
 
-        st.write("monoisotopic mass:", "{:12.4f}".format(calculate_total_ms(sum_mono, n_mono, c_mono)))
-        st.write("average mass:", "{:12.4f}".format(calculate_total_ms(sum_avg, n_avg, c_avg)))
+        total_mono_ms = calculate_total_ms(sum_mono, n_mono, c_mono)
+        total_avg_ms = calculate_total_ms(sum_avg, n_avg, c_avg)
+
+        st.write("monoisotopic mass:", "{:12.4f}".format(total_mono_ms))
+        st.write("average mass:", "{:12.4f}".format(total_avg_ms))
 
 except ValueError as ex:
-        st.error(ex)
+    st.error(ex)
+if st.checkbox("Show ESI+ Fragmentation"):
+    col_mono, col_avg = st.beta_columns(2)
+    if total_mono_ms is not None:
+        col_mono.header("monoisotopic")
+        col_mono.write(calc_fragmentation(total_mono_ms))
+    if total_avg_ms is not None:
+        col_avg.header("average")
+        col_avg.write(calc_fragmentation(total_avg_ms))
