@@ -23,13 +23,17 @@ total_mono_ms = None
 total_avg_ms = None
 
 try:
-    if st.checkbox("show unnatural amino acids"):
+    if st.checkbox("show other residues"):
+        st.write("Add other residue abbreviations in the sequence line above between round brackets"
+                 " e.g. ASD(TMR)FGH")
         st.write(aa_mass_df[20:len(aa_mass_df) + 1])
-        unnatural = st.text_input("Add unnatural amino acid to list", "")
+        unnatural = st.text_input("Add residue to list by typing abbreviation, monoisotopic mass, "
+                                  "average mass and description (e.g. TMR, 412.1523, 412.445, "
+                                  "Carboxytetramethylrhodamine)", "")
         if unnatural != "":
             u_mono, u_avg, aa_mass_df = validate_input(aa_mass_df, unnatural, "character")
         else:
-            st.write("Type name, monoisotopic and average mass (e.g. Any, 101.0603, 101.1250)")
+            st.write("Enter residue to add above")
 
     col_n, col_c = st.beta_columns(2)
     n_mono = None
@@ -76,9 +80,10 @@ except ValueError as ex:
     st.error(ex)
 if st.checkbox("Show ESI+ Fragmentation"):
     col_mono, col_avg = st.beta_columns(2)
+    col_mono.header("monoisotopic")
+    col_avg.header("average")
     if total_mono_ms is not None:
-        col_mono.header("monoisotopic")
         col_mono.write(calc_fragmentation(total_mono_ms))
     if total_avg_ms is not None:
-        col_avg.header("average")
         col_avg.write(calc_fragmentation(total_avg_ms))
+        #TODO: 4 decimals to Fragmentation

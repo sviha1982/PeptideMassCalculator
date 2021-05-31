@@ -29,9 +29,11 @@ def validate_input(df, user_input: str, column: str):
         name = temp_splits[0]
         mono = temp_splits[1]
         avg = temp_splits[2]
+        description = temp_splits[3]
 
         mono = float(mono)
         avg = float(avg)
+        description = str(description)
 
         if len(name) < 2:
             raise ValueError("Error: User input too short. Please enter at least 2 characters.")
@@ -46,7 +48,7 @@ def validate_input(df, user_input: str, column: str):
             avg = duplicate_check["avg"][0]
 
         else:
-            df = save_new_entry(df, column, name, mono, avg)
+            df = save_new_entry(df, column, name, mono, avg, description)
 
         return mono, avg, df
 
@@ -55,9 +57,14 @@ def validate_input(df, user_input: str, column: str):
         raise
 
 
-def save_new_entry(df, column: str, name: str, mono: float, avg: float):
-    df = df.append({f"{column}": name, "mono": mono, "avg": avg}, ignore_index=True)
-    df.to_csv(os.path.join("data", f"{column}.csv"), index=True)
+def save_new_entry(df, column: str, name: str, mono: float, avg: float, description: str):
+    if len(df.columns) == 3:
+        df = df.append({f"{column}": name, "mono": mono, "avg": avg}, ignore_index=True)
+        df.to_csv(os.path.join("data", f"{column}.csv"), index=True)
+    else:
+        df = df.append({f"{column}": name, "mono": mono, "avg": avg, "description": description}, ignore_index=True)
+        df.to_csv(os.path.join("data", f"{column}.csv"), index=True)
+
     return df
 
 
